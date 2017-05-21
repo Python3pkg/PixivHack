@@ -12,11 +12,11 @@ def main():
 	args = parser.parse_args()
 
 	print('Enter PHPSESSID:')
-	PHPSESSID = raw_input()
+	PHPSESSID = input()
 	print('Enter minimum ratings:')
-	min_ratings = raw_input()
+	min_ratings = input()
 	print('Download manga? (y/N)')
-	download_manga_str = raw_input()
+	download_manga_str = input()
 	if (download_manga_str == 'Y' or download_manga_str == 'y'):
 		print('Will download manga.')
 		download_manga = True
@@ -24,7 +24,7 @@ def main():
 		print('Will not download manga.')
 		download_manga = False
 	print('Download big-images? (y/N)')
-	download_big_images_str = raw_input()
+	download_big_images_str = input()
 	if (download_big_images_str == 'Y' or download_big_images_str == 'y'):
 		print('Will download big-images.')
 		download_big_images = True
@@ -36,20 +36,20 @@ def main():
 	
 	if (args.authorlist):
 		print('Will crawl using author ID list.')
-		print('JSON file : ' + args.authorlist)
+		print(('JSON file : ' + args.authorlist))
 		f = open(args.authorlist, 'r')
 		author_list = json.loads(f.read())
 		f.close()
 		author_list = [str(x['author_id']) if type(x)==dict else str(x) for x in author_list]
 		print('Enter maximum number of illustrations per author:')
-		max_pics_per_author = raw_input()
+		max_pics_per_author = input()
 		lib.config('', int(min_ratings), 0, download_manga, download_big_images)
 		lib.crawl_by_author(author_list, int(max_pics_per_author))
 	else:
 		print('Will crawl using keyword.')
 		print('Enter keyword:')
-		key_word = raw_input()
+		key_word = input()
 		print('Enter maximum number of illustrations to download:')
-		max_pics = raw_input()
+		max_pics = input()
 		lib.config(key_word, int(min_ratings), int(max_pics), download_manga, download_big_images)
 		lib.crawl()

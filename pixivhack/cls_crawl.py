@@ -3,12 +3,12 @@
 #Author: Chion82<sdspeedonion@gmail.com>
 
 import requests
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import re
 import sys, os
-import HTMLParser
+import html.parser
 import json
-from urlparse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -70,7 +70,7 @@ class PixivHackLib(object):
 	def crawl_by_author(self, author_list, max_pics_per_author):
 		for author_id in author_list:
 			print('***********************Crawling by author*************************')
-			print('author Pixiv ID : ' + author_id)
+			print(('author Pixiv ID : ' + author_id))
 			self.__pic_downloaded_count = 0
 			page = 1
 			if not os.path.exists('pixivimages/' + author_id):
@@ -97,7 +97,7 @@ class PixivHackLib(object):
 	def __get_search_result(self, page, author_id):
 		try:
 			if (author_id == None):
-				search_result = self.__session.get('http://www.pixiv.net/search.php?word=' + urllib.quote(self.__keyword) + '&p=' + str(page), cookies={'PHPSESSID': self.__session_id})
+				search_result = self.__session.get('http://www.pixiv.net/search.php?word=' + urllib.parse.quote(self.__keyword) + '&p=' + str(page), cookies={'PHPSESSID': self.__session_id})
 			else:
 				search_result = self.__session.get('http://www.pixiv.net/member_illust.php?id=' + author_id + '&type=all&p=' + str(page), cookies={'PHPSESSID': self.__session_id})
 		except Exception:
@@ -109,7 +109,7 @@ class PixivHackLib(object):
 
 	def __enter_illustration_page(self, url, directory):
 		print('********************Entering illustration page*********************')
-		print('Entering ' + url)
+		print(('Entering ' + url))
 
 		try:
 			page_result = self.__session.get(url, cookies={'PHPSESSID': self.__session_id})
@@ -123,11 +123,11 @@ class PixivHackLib(object):
 		pixiv_id = parse_qs(urlparse(url).query)['illust_id'][0]
 		re_result_author_id = re.findall(r'<a href="/member\.php\?id=(.*?)" class="user-link">', page_result.text)
 		pixiv_author_id = re_result_author_id[0]
-		print('pixiv_id=' + pixiv_id)
-		print('ratings='+ratings)
-		print('author_id='+pixiv_author_id)
+		print(('pixiv_id=' + pixiv_id))
+		print(('ratings='+ratings))
+		print(('author_id='+pixiv_author_id))
 		if (int(ratings) < self.__min_ratings):
-			print('Ratings < ' + str(self.__min_ratings) + ' , Skipping...')
+			print(('Ratings < ' + str(self.__min_ratings) + ' , Skipping...'))
 			return
 		self.__increment_author_ratings(pixiv_author_id, int(ratings), pixiv_id)
 		re_manga_result = re.findall(r'<a href="(member_illust\.php\?mode=manga&amp;illust_id=.*?)"', page_result.text)
@@ -157,7 +157,7 @@ class PixivHackLib(object):
 
 	def __enter_big_image_page(self, url, referer, directory):
 		print('********************Entering big-image page************************')
-		print('Entering ' + url)
+		print(('Entering ' + url))
 		try:
 			page_result = self.__session.get(url, cookies={'PHPSESSID': self.__session_id}, headers={'Referer':referer})
 		except Exception:
@@ -172,7 +172,7 @@ class PixivHackLib(object):
 
 	def __enter_manga_page(self, url, pixiv_id, referer,directory):
 		print('********************Entering manga page**************************')
-		print('Entering ' + url)
+		print(('Entering ' + url))
 		if not os.path.exists(directory + '/' + pixiv_id):
 			os.makedirs(directory + '/' + pixiv_id)
 
@@ -189,7 +189,7 @@ class PixivHackLib(object):
 
 	def __enter_manga_big_page(self, url, referer, directory):
 		print('********************Entering manga-big page***************************')
-		print('Entering ' + url)
+		print(('Entering ' + url))
 
 		try:
 			page_result = self.__session.get(url, cookies={'PHPSESSID': self.__session_id}, headers={'Referer':referer})
@@ -220,7 +220,7 @@ class PixivHackLib(object):
 		f.close()
 
 	def __html_decode(self, string):
-		h = HTMLParser.HTMLParser()
+		h = html.parser.HTMLParser()
 		return h.unescape(string)
 
 	def __download_image(self, url, referer, directory):
@@ -233,7 +233,7 @@ class PixivHackLib(object):
 
 		if (download_result.status_code != 200):
 			print('Download Error')
-			print(download_result.text)
+			print((download_result.text))
 			return
 		url_parsed_array = url.split('/')
 		file_name = url_parsed_array[len(url_parsed_array)-1]
